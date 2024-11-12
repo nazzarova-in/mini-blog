@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Post, Comment
+from .models import Post, Comment, Favorite
 
 class CommentSerializer(serializers.ModelSerializer):
     author = serializers.ReadOnlyField(source='author.username')
@@ -24,4 +24,14 @@ class PostSerializers(serializers.ModelSerializer):
 
     def get_total_dislikes(self, obj):
         return obj.total_dislikes()
+
+class FavoriteSerializers(serializers.ModelSerializer):
+    author = serializers.ReadOnlyField(source='author.username')
+
+    class Meta:
+        model = Favorite
+        fields = '__all__'
+
+
+
 
