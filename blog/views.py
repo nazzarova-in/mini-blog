@@ -2,7 +2,7 @@ from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework import viewsets, permissions
+from rest_framework import viewsets, permissions, filters
 from rest_framework.views import APIView
 
 from .models import Post, Comment, Favorite
@@ -13,6 +13,8 @@ class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.all().order_by('-created_at')
     serializer_class = PostSerializers
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['title']
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
