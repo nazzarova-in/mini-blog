@@ -1,9 +1,12 @@
 from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework import viewsets, permissions
-from .models import Post, Comment
-from .serializers import PostSerializers, CommentSerializer
+from rest_framework.views import APIView
+
+from .models import Post, Comment, Favorite
+from .serializers import PostSerializers, CommentSerializer, FavoriteSerializers
 
 
 class PostViewSet(viewsets.ModelViewSet):
@@ -55,6 +58,16 @@ class PostViewSet(viewsets.ModelViewSet):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    @action(detail=True, methods=['post'])
+    def toggle(self, request, pk=None):
+        post = Post.objects.get(id=pk)
+
+        favorite, created = Favorite.objects.get_or_create(author=request.user, post=post)
+        if not created:
+            favorite.delete()
+            return Response({'status': 'removed from favorites'}, status=status.HTTP_200_OK)
+        return Response({'status': 'added to favorites'}, status=status.HTTP_201_CREATED)
+
 
 class CommentViewSet(viewsets.ModelViewSet):
     queryset = Comment.objects.all()
@@ -63,4 +76,9 @@ class CommentViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
+
+class FavoriteToggleViewSet(viewsets.ModelViewSet):
+    queryset = Favorite.objects.all()
+    serializer_class = FavoriteSerializers
+    permission_classes = [IsAuthenticated]
 
