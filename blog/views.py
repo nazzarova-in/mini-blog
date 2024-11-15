@@ -3,6 +3,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework import viewsets, permissions, filters
+from django_filters.rest_framework import DjangoFilterBackend
+
 from rest_framework.views import APIView
 
 from .models import Post, Comment, Favorite
@@ -15,6 +17,17 @@ class PostViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     filter_backends = [filters.SearchFilter]
     search_fields = ['title']
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        category = self.request.query_params.get('category')
+        tags = self.request.query_params.getlist('tags')
+
+        if category:
+            queryset = queryset.filter(category__name__icontains=category)
+        if tags:
+            queryset = queryset.filter(tags__name__icontains__in=tags).distinct()
+        return queryset
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
