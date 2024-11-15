@@ -1,5 +1,18 @@
 from rest_framework import serializers
-from .models import Post, Comment, Favorite
+from .models import Post, Comment, Favorite, Category, Tag
+
+
+class CategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Category
+        fields = ['id', 'name']
+
+
+class TagSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Tag
+        fields = ['id', 'name']
+
 
 class CommentSerializer(serializers.ModelSerializer):
     author = serializers.ReadOnlyField(source='author.username')
@@ -9,15 +22,19 @@ class CommentSerializer(serializers.ModelSerializer):
         fields = ['id', 'author', 'content', 'created_at', 'post']
         read_only_fields = ['post', 'created_at']
 
+
 class PostSerializers(serializers.ModelSerializer):
     author = serializers.ReadOnlyField(source='author.username')
     total_likes = serializers.SerializerMethodField()
     total_dislikes = serializers.SerializerMethodField()
     comments = CommentSerializer(many=True, read_only=True)
+    category = CategorySerializer()
+    tags = TagSerializer(many=True)
 
     class Meta:
         model = Post
-        fields = ['id', 'title', 'content', 'created_at', 'author', 'total_likes', 'total_dislikes', 'comments']
+        fields = ['id', 'title', 'content', 'created_at', 'author', 'total_likes', 'total_dislikes', 'comments', 'category',
+                  'tags']
 
     def get_total_likes(self, obj):
         return obj.total_likes()
