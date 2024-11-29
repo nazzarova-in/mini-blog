@@ -34,7 +34,7 @@ class PostSerializers(serializers.ModelSerializer):
     class Meta:
         model = Post
         fields = ['id', 'title', 'content', 'created_at', 'author', 'total_likes', 'total_dislikes', 'comments', 'category',
-                  'tags', 'image']
+                  'tags', 'image', 'views']
 
     def get_total_likes(self, obj):
         return obj.total_likes()
