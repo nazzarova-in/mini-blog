@@ -22,7 +22,8 @@ class Post(models.Model):
     likes = models.ManyToManyField(User, related_name='liked_posts', blank=True)
     dislikes = models.ManyToManyField(User, related_name='disliked_posts', blank=True)
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True, related_name='posts')
-    tags = models.ManyToManyField(Tag, blank=True, related_name='posts')
+    tags = models.ManyToManyField(Tag, blank=True, null=True, related_name='posts')
+    image = models.ImageField(upload_to='posts/', blank=True, null=True)
 
     def __str__(self):
         return self.title
@@ -39,9 +40,11 @@ class Comment(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
+    image = models.ImageField(upload_to='comments/', null=True, blank=True)
 
     def __str__(self):
         return f"Comment by {self.author} on {self.post}"
+
 
 class Favorite(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='favorites')
