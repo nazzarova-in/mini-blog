@@ -32,6 +32,10 @@ class PostViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
 
+    @action(detail=False, methods=['post'])
+    def upload_image(self, request):
+        return Response({'message': 'Image uploaded successfully!'})
+
     @action(detail=True, methods=['post'])
     def like(self, request, pk=None):
         post = self.get_object()
@@ -91,6 +95,7 @@ class CommentViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
+
 
 class FavoriteToggleViewSet(viewsets.ModelViewSet):
     queryset = Favorite.objects.all()
