@@ -24,6 +24,7 @@ class Post(models.Model):
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True, related_name='posts')
     tags = models.ManyToManyField(Tag, blank=True, null=True, related_name='posts')
     image = models.ImageField(upload_to='posts/', blank=True, null=True)
+    views = models.PositiveIntegerField(default=0)
 
     def __str__(self):
         return self.title
